@@ -1,0 +1,441 @@
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { ArrowUp, Linkedin, Github, Mail, Shield, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import profilePicture from "@/assets/profile-picture.jpg";
+
+export default function Portfolio() {
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY;
+      const height = document.body.scrollHeight - window.innerHeight;
+      setScrollProgress((scrolled / height) * 100);
+      setShowScrollTop(scrolled > 300);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDownloadResume = async () => {
+    setIsDownloading(true);
+    
+    try {
+      // Create a temporary link element to trigger download
+      const link = document.createElement('a');
+      link.href = '/Cyber resume - Srinivasan.pdf';
+      link.download = 'Srinivasan_K_Cybersecurity_Resume.pdf';
+      document.body.appendChild(link);
+      
+      // Simulate download with visual feedback
+      link.click();
+      
+      // Show success toast
+      toast({
+        title: "Download Started!",
+        description: "Your resume is downloading now.",
+      });
+      
+      // Clean up
+      document.body.removeChild(link);
+      
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Sorry, there was an issue downloading the resume. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setTimeout(() => setIsDownloading(false), 1000);
+    }
+  };
+
+  return (
+    <div className="relative bg-gradient-dark text-foreground min-h-screen overflow-hidden">
+      {/* Modern animated background elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-cyber-primary/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-40 right-20 w-96 h-96 bg-cyber-secondary/8 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-20 left-1/3 w-64 h-64 bg-cyber-accent/6 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-1/2 right-10 w-48 h-48 bg-cyber-success/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '6s' }}></div>
+      </div>
+      
+      {/* Gradient mesh overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/95"></div>
+      
+      {/* Content wrapper */}
+      <div className="relative z-10">
+      {/* Scroll Progress Bar */}
+      <div
+        className="fixed top-0 left-0 h-1 bg-gradient-cyber z-50 transition-all duration-300"
+        style={{ width: `${scrollProgress}%` }}
+      />
+
+      {/* Hero Section */}
+      <section className="h-screen flex flex-col justify-center items-center text-center px-4 bg-gradient-dark relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyber-primary/10 via-transparent to-cyber-secondary/10" />
+        <div className="relative z-10">
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="relative w-40 h-40 mx-auto mb-6">
+              <img
+                src={profilePicture}
+                alt="Srinivasan K - Cybersecurity Specialist"
+                className="w-full h-full rounded-full object-cover border-4 border-cyber-primary shadow-glow"
+              />
+              <div className="absolute inset-0 rounded-full border-2 border-cyber-secondary/30 animate-pulse" />
+            </div>
+            <Shield className="w-12 h-12 mx-auto text-cyber-primary animate-cyber-glow" />
+          </motion.div>
+          <motion.h1
+            className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-cyber bg-clip-text text-transparent"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            Srinivasan K
+          </motion.h1>
+          <motion.p
+            className="text-xl md:text-2xl text-muted-foreground max-w-3xl leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          >
+            Cybersecurity & IT Infrastructure Specialist with 4 years of progressive experience — 2 years in System Administration and 2 years in Cybersecurity Operations.
+          </motion.p>
+          <motion.div
+            className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.6 }}
+          >
+            <Button 
+              onClick={handleDownloadResume}
+              disabled={isDownloading}
+              className="bg-cyber-primary text-primary-foreground hover:bg-cyber-primary/90 shadow-cyber group relative overflow-hidden"
+            >
+              <motion.div
+                className="flex items-center gap-2"
+                animate={isDownloading ? { scale: [1, 1.05, 1] } : {}}
+                transition={{ duration: 0.6, repeat: isDownloading ? Infinity : 0 }}
+              >
+                <Download className={`w-4 h-4 transition-all duration-300 ${isDownloading ? 'animate-bounce' : ''}`} />
+                {isDownloading ? 'Downloading...' : 'Download Resume'}
+              </motion.div>
+              {isDownloading && (
+                <motion.div
+                  className="absolute inset-0 bg-cyber-secondary opacity-20"
+                  animate={{ x: ['-100%', '100%'] }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                />
+              )}
+            </Button>
+            <a href="/Cyber resume - Srinivasan.pdf" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" className="border-cyber-primary text-cyber-primary hover:bg-cyber-primary hover:text-primary-foreground">
+                View Resume
+              </Button>
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-20 px-6 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-semibold mb-8 text-center bg-gradient-cyber bg-clip-text text-transparent">
+            About Me
+          </h2>
+          <div className="bg-card p-8 rounded-xl shadow-card border border-border">
+            <p className="text-card-foreground leading-relaxed text-lg">
+              Cybersecurity & IT Infrastructure Specialist with proven expertise in endpoint protection, SIEM monitoring, firewall administration, patch management, vulnerability management, and incident response. Adept at implementing best practices, mitigating risks, and ensuring compliance with organizational policies and industry regulations.
+            </p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Skills Section */}
+      <section id="skills" className="py-20 px-6 max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center bg-gradient-cyber bg-clip-text text-transparent">
+            Core Competencies
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              "Threat & Vulnerability Management","Incident Response","SIEM Monitoring","Data Loss Prevention (DLP)",
+              "Firewall Administration (FortiGate)","Endpoint Protection (Trend Micro)","Active Directory & GPO",
+              "Microsoft 365 Administration","Windows Server & Ubuntu","SCCM Deployment","VoIP Management",
+              "Peripheral & Printer Support","TCP/IP, DHCP, DNS","VLANs & VPN","Port Security","Access Control",
+              "Multi-Factor Authentication (MFA)","Patch Deployment","System Hardening","Compliance & Audits",
+              "ManageEngine","FortiClient VPN","AuditPlus","ServiceNow","Service Desk Plus","VNC & UltraViewer",
+              "Nmap & VirusTotal","Apex One","Deep Security"
+            ].map((skill, i) => (
+              <motion.div
+                key={i}
+                className="bg-card p-4 rounded-xl text-center hover:bg-card/80 transition-all duration-300 border border-border shadow-card hover:shadow-glow group cursor-default"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.05 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -5 }}
+              >
+                <span className="text-card-foreground group-hover:text-cyber-primary transition-colors duration-300">
+                  {skill}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Experience Section */}
+      <section id="experience" className="py-20 px-6 max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center bg-gradient-cyber bg-clip-text text-transparent">
+            Professional Experience
+          </h2>
+          <div className="space-y-8">
+            {[
+              {
+                title: "3i InfoTech – System Administrator",
+                period: "Mar 2025 – Present",
+                responsibilities: [
+                  "Monitor and respond to SIEM alerts, performing investigations to identify and neutralize threats.",
+                  "Conduct vulnerability assessments and implement remediation strategies.",
+                  "Configure and manage Fortinet firewall policies to block malicious, phishing, and non-compliant websites.",
+                  "Utilize ManageEngine for patch management cycles ensuring timely updates.",
+                  "Analyze VPN traffic for anomalies and enforce access controls.",
+                  "Collaborate on incident investigations and prepare RCA reports.",
+                  "Maintain SOPs and incident response playbooks.",
+                  "Conduct security awareness training for staff."
+                ]
+              },
+              {
+                title: "Infognana Solutions – System Administrator",
+                period: "Aug 2024 – Feb 2025",
+                responsibilities: [
+                  "Managed IT support tickets while applying endpoint security controls.",
+                  "Configured and maintained FortiGate firewall policies & VPNs.",
+                  "Administered Active Directory & GPOs for security enforcement.",
+                  "Deployed and maintained Trend Micro Deep Security & Apex One Central.",
+                  "Implemented Trend Micro email security to detect and quarantine threats.",
+                  "Administered O365 accounts and permissions.",
+                  "Audited vendor VPN accounts with strict access controls."
+                ]
+              },
+              {
+                title: "Fidelis Technology Services – Desktop Support Engineer",
+                period: "Apr 2023 – May 2024",
+                responsibilities: [
+                  "Troubleshot GlobalProtect VPN and firewall issues for remote staff.",
+                  "Managed access control via AD & AuditPlus enforcing least-privilege policies.",
+                  "Monitored Fortinet firewall logs for suspicious activity.",
+                  "Created secure troubleshooting documentation.",
+                  "Secured network printers and assisted in O365 configurations."
+                ]
+              },
+              {
+                title: "Precision Informatics – System Engineer",
+                period: "Sep 2021 – Mar 2022",
+                responsibilities: [
+                  "Deployed OS and application updates via SCCM.",
+                  "Configured and enforced GPOs for hardening and compliance.",
+                  "Troubleshot DHCP, DNS, and TCP/IP issues.",
+                  "Maintained endpoint security protection."
+                ]
+              },
+              {
+                title: "Finecons Pvt Ltd – Technical Support Engineer",
+                period: "Oct 2019 – Sep 2021",
+                responsibilities: [
+                  "Implemented Multi-Factor Authentication (MFA).",
+                  "Delivered security awareness sessions reducing phishing incidents.",
+                  "Installed and secured Windows OS & Office applications.",
+                  "Troubleshot TCP/IP & DNS issues for secure connectivity.",
+                  "Managed incidents via ServiceNow and remote troubleshooting with AnyDesk.",
+                  "Maintained technical/security documentation and enforced IT policies."
+                ]
+              }
+            ].map((job, index) => (
+              <motion.div
+                key={index}
+                className="bg-card p-6 md:p-8 rounded-xl shadow-card border border-border hover:shadow-glow transition-all duration-300"
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-xl md:text-2xl font-bold text-cyber-primary mb-2">
+                  {job.title}
+                </h3>
+                <p className="text-muted-foreground mb-4 font-medium">{job.period}</p>
+                <ul className="space-y-2">
+                  {job.responsibilities.map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-card-foreground">
+                      <span className="w-2 h-2 bg-cyber-secondary rounded-full mt-2 flex-shrink-0" />
+                      <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Education Section */}
+      <section id="education" className="py-20 px-6 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-semibold mb-8 text-center bg-gradient-cyber bg-clip-text text-transparent">
+            Education
+          </h2>
+          <div className="bg-card p-8 rounded-xl shadow-card border border-border text-center">
+            <p className="text-card-foreground text-lg font-medium">
+              B.Tech in Information Technology
+            </p>
+            <p className="text-muted-foreground mt-2">
+              Jaya Engineering College, Anna University (2015 – 2019)
+            </p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 px-6 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center bg-gradient-cyber bg-clip-text text-transparent">
+            Contact Me
+          </h2>
+          <div className="bg-card p-8 rounded-xl shadow-card border border-border">
+            <form className="grid gap-6">
+              <input
+                type="text"
+                placeholder="Your Name"
+                className="p-4 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-cyber-primary focus:border-transparent transition-all duration-300"
+                required
+              />
+              <input
+                type="email"
+                placeholder="Your Email"
+                className="p-4 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-cyber-primary focus:border-transparent transition-all duration-300"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Subject"
+                className="p-4 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-cyber-primary focus:border-transparent transition-all duration-300"
+              />
+              <textarea
+                placeholder="Message"
+                rows={5}
+                className="p-4 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-cyber-primary focus:border-transparent transition-all duration-300 resize-none"
+                required
+              ></textarea>
+              <Button
+                type="submit"
+                className="w-full bg-cyber-primary text-primary-foreground hover:bg-cyber-primary/90 shadow-cyber py-4 text-lg font-semibold"
+              >
+                Send Message
+              </Button>
+            </form>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 border-t border-border bg-card/50">
+        <motion.div
+          className="max-w-4xl mx-auto px-6"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex justify-center space-x-8 mb-6">
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-cyber-primary transition-colors duration-300 hover:animate-float"
+            >
+              <Linkedin className="w-6 h-6" />
+            </a>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-cyber-primary transition-colors duration-300 hover:animate-float"
+            >
+              <Github className="w-6 h-6" />
+            </a>
+            <a
+              href="mailto:srinivasanrajalakshmi0@gmail.com"
+              className="text-muted-foreground hover:text-cyber-primary transition-colors duration-300 hover:animate-float"
+            >
+              <Mail className="w-6 h-6" />
+            </a>
+          </div>
+          <p className="text-muted-foreground text-center">
+            © 2025 Srinivasan K. All Rights Reserved.
+          </p>
+        </motion.div>
+      </footer>
+
+      {/* Back to Top Button */}
+      {showScrollTop && (
+        <motion.button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 p-4 rounded-full bg-cyber-primary shadow-cyber hover:bg-cyber-primary/90 transition-all duration-300 hover:shadow-glow"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.5 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <ArrowUp className="w-6 h-6 text-primary-foreground" />
+        </motion.button>
+      )}
+      
+      <Toaster />
+      </div>
+    </div>
+  );
+}
